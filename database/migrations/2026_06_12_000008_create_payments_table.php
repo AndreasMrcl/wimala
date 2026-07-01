@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('invoice_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->date('tanggal');
+            $table->decimal('jumlah', 15, 2);
+            $table->string('metode')->default('transfer'); // transfer | tunai
+            $table->string('bukti_transfer')->nullable();   // path file di disk public
+            $table->foreignId('confirmed_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('payments');
+    }
+};

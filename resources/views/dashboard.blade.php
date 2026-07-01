@@ -1,56 +1,275 @@
-@extends('layouts.app')
-@section('title','Dashboard')
+<!DOCTYPE html>
+<html lang="id">
 
-@section('content')
-  <div class="card pad" style="margin-bottom:18px">
-    <div class="pghead" style="margin-bottom:0">
-      <div class="ti">
-        <span class="tiic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16l3-4 3 3 4-6"/></svg></span>
-        <div><h1>Dashboard</h1><div class="ds">Ringkasan inventory, penjualan, dan keuangan proyek</div></div>
-      </div>
-      <div class="date">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</div>
-    </div>
-  </div>
+<head>
+    <title>Dashboard</title>
+    @include('layout.head')
+</head>
 
-  <div class="kpis">
-    <div class="stat"><div class="lbl">Total Unit</div><div class="val">210</div><div class="dlt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg> +30 unit · 2 cluster</div></div>
-    <div class="stat"><div class="lbl">Unit Terjual</div><div class="val">82</div><div class="dlt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg> +6 bulan ini</div></div>
-    <div class="stat"><div class="lbl">Pengajuan KPR Aktif</div><div class="val">14</div><div class="dlt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg> +3 bulan ini</div></div>
-    <div class="stat"><div class="lbl">Penerimaan Bulan Ini</div><div class="val">Rp 4.825.000.000</div><div class="sub">42 pembayaran masuk</div></div>
-  </div>
+<body class="bg-gray-50">
 
-  <div class="kpis">
-    <div class="stat color c-green"><div class="txt"><div class="lbl">Stok Tersedia</div><div class="val">98</div><div class="per">Jun 2026</div></div><div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></div></div>
-    <div class="stat color c-blue"><div class="txt"><div class="lbl">Unit Dibooking</div><div class="val">30</div><div class="per">Jun 2026</div></div><div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg></div></div>
-    <div class="stat color c-amber"><div class="txt"><div class="lbl">Menunggu SP2K</div><div class="val">14</div><div class="per">Jun 2026</div></div><div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div></div>
-    <div class="stat color c-purple"><div class="txt"><div class="lbl">Serah Terima</div><div class="val">5</div><div class="per">Jun 2026</div></div><div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="14" r="5"/><path d="M11.5 11.5L21 2l1 4-3 1 1 3-3 1"/></svg></div></div>
-  </div>
+    @include('layout.sidebar')
 
-  <div class="charts">
-    <div class="card pad chart-card"><h3>Tren Penjualan</h3><div class="cs">6 periode terakhir</div><div class="chart-box"><canvas id="chartSales"></canvas></div></div>
-    <div class="card pad chart-card"><h3>Penjualan per Cluster</h3><div class="cs">Realisasi dibanding target</div><div class="chart-box"><canvas id="chartCluster"></canvas></div></div>
-  </div>
-  <p class="note">Semua angka adalah data contoh untuk ilustrasi. Pada sistem sebenarnya, angka diperbarui otomatis dari aktivitas penjualan dan pembayaran.</p>
-@endsection
+    <main class="md:ml-64 xl:ml-72 2xl:ml-72">
+        @include('layout.navbar')
 
-@push('scripts')
-<script>
-  var CHART = @json($chart);
-  if (window.Chart) {
-    Chart.defaults.font.family = "Segoe UI, system-ui, sans-serif";
-    Chart.defaults.color = "#64748b";
-    new Chart(document.getElementById('chartSales'), { type:'line',
-      data:{ labels:CHART.salesLabels, datasets:[
-        {label:'Unit terjual',data:CHART.terjual,borderColor:'#1875b9',backgroundColor:'rgba(24,117,185,.08)',fill:true,tension:.35,borderWidth:2,pointRadius:4,pointBackgroundColor:'#1875b9'},
-        {label:'Unit dibooking',data:CHART.dibooking,borderColor:'#1f9d50',backgroundColor:'transparent',tension:.35,borderWidth:2,pointRadius:4,pointBackgroundColor:'#1f9d50'}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:18}}},scales:{y:{beginAtZero:true,grid:{color:'#eef1f6'}},x:{grid:{display:false}}}} });
-    new Chart(document.getElementById('chartCluster'), { type:'bar',
-      data:{ labels:CHART.clusterLabels, datasets:[
-        {label:'Realisasi',data:CHART.realisasi,backgroundColor:'#1875b9',borderRadius:6,barThickness:26},
-        {label:'Target',data:CHART.target,backgroundColor:'#bcd8ee',borderRadius:6,barThickness:26}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:18}}},scales:{y:{beginAtZero:true,grid:{color:'#eef1f6'}},x:{grid:{display:false}}}} });
-  }
-</script>
-@endpush
+        <div class="p-6 space-y-6">
+
+            <!-- HEADER -->
+            <div
+                class="md:flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-gray-100 space-y-2 md:space-y-0">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-sky-600"></i>
+                        Dashboard
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Ringkasan inventory, penjualan, dan keuangan proyek
+                    </p>
+                </div>
+                <div class="text-sm text-gray-500">
+                    {{ now()->translatedFormat('l, d F Y') }}
+                </div>
+            </div>
+
+            <!-- KPI CARDS -->
+            <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">
+                        Total Unit
+                    </p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-1">
+                        210
+                    </h2>
+                    <p class="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        +30 unit · 2 cluster
+                    </p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">
+                        Unit Terjual
+                    </p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-1">
+                        82
+                    </h2>
+                    <p class="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        +6 bulan ini
+                    </p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">
+                        Pengajuan KPR Aktif
+                    </p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-1">
+                        14
+                    </h2>
+                    <p class="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        +3 bulan ini
+                    </p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">
+                        Penerimaan Bulan Ini
+                    </p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-1">
+                        Rp 4.825.000.000
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-2">
+                        42 pembayaran masuk
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- SUMMARY SECTION -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <!-- Stok Tersedia -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-green-600 uppercase font-semibold tracking-wide">Stok Tersedia</p>
+                            <h3 class="text-3xl font-bold text-green-700 mt-2">98</h3>
+                            <p class="text-xs text-green-600 mt-2">Jun 2026</p>
+                        </div>
+                        <div class="text-4xl text-green-300 opacity-50">
+                            <i class="fa-solid fa-house"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unit Dibooking -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-blue-600 uppercase font-semibold tracking-wide">Unit Dibooking</p>
+                            <h3 class="text-3xl font-bold text-blue-700 mt-2">30</h3>
+                            <p class="text-xs text-blue-600 mt-2">Jun 2026</p>
+                        </div>
+                        <div class="text-4xl text-blue-300 opacity-50">
+                            <i class="fa-solid fa-bookmark"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Menunggu SP2K -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-yellow-600 uppercase font-semibold tracking-wide">Menunggu SP2K</p>
+                            <h3 class="text-3xl font-bold text-yellow-700 mt-2">14</h3>
+                            <p class="text-xs text-yellow-600 mt-2">Jun 2026</p>
+                        </div>
+                        <div class="text-4xl text-yellow-300 opacity-50">
+                            <i class="fa-solid fa-file-signature"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Serah Terima -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-purple-600 uppercase font-semibold tracking-wide">Serah Terima</p>
+                            <h3 class="text-3xl font-bold text-purple-700 mt-2">5</h3>
+                            <p class="text-xs text-purple-600 mt-2">Jun 2026</p>
+                        </div>
+                        <div class="text-4xl text-purple-300 opacity-50">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- CHARTS -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <!-- TREN PENJUALAN -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">
+                                Tren Penjualan
+                            </h3>
+                            <p class="text-xs text-gray-500 mt-1">6 periode terakhir</p>
+                        </div>
+                    </div>
+                    <canvas id="chartSales" height="100"></canvas>
+                </div>
+
+                <!-- PENJUALAN PER CLUSTER -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">
+                                Penjualan per Cluster
+                            </h3>
+                            <p class="text-xs text-gray-500 mt-1">Realisasi dibanding target</p>
+                        </div>
+                    </div>
+                    <canvas id="chartCluster" height="100"></canvas>
+                </div>
+
+            </div>
+
+            <p class="text-xs text-gray-400">
+                Semua angka adalah data contoh untuk ilustrasi. Pada sistem sebenarnya, angka diperbarui otomatis dari
+                aktivitas penjualan dan pembayaran.
+            </p>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const CHART = @json($chart);
+
+        const salesCtx = document.getElementById('chartSales').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: CHART.salesLabels,
+                datasets: [
+                    {
+                        label: 'Unit terjual',
+                        data: CHART.terjual,
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.08)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Unit dibooking',
+                        data: CHART.dibooking,
+                        borderColor: '#16a34a',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const clusterCtx = document.getElementById('chartCluster').getContext('2d');
+        new Chart(clusterCtx, {
+            type: 'bar',
+            data: {
+                labels: CHART.clusterLabels,
+                datasets: [
+                    {
+                        label: 'Realisasi',
+                        data: CHART.realisasi,
+                        backgroundColor: '#0284c7',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Target',
+                        data: CHART.target,
+                        backgroundColor: '#bae6fd',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+    @include('sweetalert::alert')
+
+</body>
+
+</html>

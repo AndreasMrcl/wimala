@@ -22,7 +22,23 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
+
+    /**
+     * Daftar label peran untuk tampilan.
+     */
+    public const ROLE_LABELS = [
+        'direktur'  => 'Direktur',
+        'finance'   => 'Finance / Akunting',
+        'marketing' => 'Marketing / Sales',
+        'admin'     => 'Admin Proyek',
+    ];
+
+    public function roleLabel(): string
+    {
+        return self::ROLE_LABELS[$this->role] ?? ucfirst((string) $this->role);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
